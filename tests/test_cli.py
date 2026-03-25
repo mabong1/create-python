@@ -54,7 +54,7 @@ def test_create_project_with_git(tmp_path):
         assert result.exit_code == 0
 
     project_path = tmp_path / "my-app"
-    mock_run.assert_any_call(["git", "init"], cwd=project_path, capture_output=True, check=True)
+    mock_run.assert_any_call(["git", "init", "-b", "main"], cwd=project_path, capture_output=True, check=True)
     mock_run.assert_any_call(
         ["uv", "run", "pre-commit", "install"],
         cwd=project_path,
@@ -85,3 +85,35 @@ def test_create_project_no_subprocess_by_default(tmp_path):
         assert result.exit_code == 0
 
     mock_run.assert_not_called()
+
+
+def test_create_project_with_github_ci(tmp_path):
+    result = runner.invoke(app, ["my-app", "--output-dir", str(tmp_path), "--use-ci", "github"])
+    assert result.exit_code == 0
+
+    project_dir = tmp_path / "my-app"
+    assert (project_dir / ".github" / "workflows" / "ci.yml").exists()
+    assert not (project_dir / ".gitlab-ci.yml").exists()
+
+
+def test_create_project_with_gitlab_ci(tmp_path):
+    result = runner.invoke(app, ["my-app", "--output-dir", str(tmp_path), "--use-ci", "gitlab"])
+    assert result.exit_code == 0
+
+    project_dir = tmp_path / "my-app"
+    assert (project_dir / ".gitlab-ci.yml").exists()
+    assert not (project_dir / ".github").exists()
+
+
+def test_create_project_without_ci(tmp_path):
+    result = runner.invoke(app, ["my-app", "--output-dir", str(tmp_path)])
+    assert result.exit_code == 0
+
+    project_dir = tmp_path / "my-app"
+    assert not (project_dir / ".github").exists()
+    assert not (project_dir / ".gitlab-ci.yml").exists()
+
+
+def test_create_project_invalid_ci(tmp_path):
+    result = runner.invoke(app, ["my-app", "--output-dir", str(tmp_path), "--use-ci", "jenkins"])
+    assert result.exit_code == 1

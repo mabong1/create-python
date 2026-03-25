@@ -1,6 +1,6 @@
 [project]
 name = "create-python"
-version = "0.1.0"
+version = "0.2.0"
 description = "CLI tool to scaffold modern Python projects with uv, ruff, and pytest."
 readme = "README.md"
 license = "MIT"

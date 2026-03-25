@@ -1,0 +1,13 @@
+stages:
+  - test
+
+test:
+  stage: test
+  image: python:{{ cookiecutter.python_version }}
+  before_script:
+    - pip install uv
+    - uv sync
+  script:
+    - uv run ruff check .
+    - uv run ruff format --check .
+    - uv run pytest --cov --cov-report=term-missing

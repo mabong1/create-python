@@ -28,6 +28,7 @@ def create_project(
     output_dir: str,
     author: str,
     description: str,
+    ci: str,
     init_git: bool,
     run_install: bool,
 ) -> Path:
@@ -42,6 +43,7 @@ def create_project(
         "python_version": python_version,
         "author": author,
         "description": description or f"A Python project: {project_name}",
+        "ci": ci,
     }
 
     console.print(f"[bold]Creating project:[/] {project_slug}")

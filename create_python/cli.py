@@ -22,16 +22,22 @@ def main(
     output_dir: Annotated[str, typer.Option("--output-dir", "-o", help="Parent directory for the project")] = ".",
     author: Annotated[str, typer.Option("--author", "-a", help="Author name")] = "",
     description: Annotated[str, typer.Option("--description", "-d", help="Project description")] = "",
+    use_ci: Annotated[str, typer.Option("--use-ci", help="Add CI workflow (github or gitlab)")] = "",
     git: Annotated[bool, typer.Option("--git", help="Init git repository")] = False,
     install: Annotated[bool, typer.Option("--install", help="Run uv sync")] = False,
 ) -> None:
     """Create a new Python project."""
+    if use_ci and use_ci not in ("github", "gitlab"):
+        console.print("[bold red]Error:[/] --use-ci must be 'github' or 'gitlab'")
+        raise typer.Exit(code=1)
+
     project_path = create_project(
         project_name=project_name,
         python_version=python_version,
         output_dir=output_dir,
         author=author,
         description=description,
+        ci=use_ci or "none",
         init_git=git,
         run_install=install,
     )
